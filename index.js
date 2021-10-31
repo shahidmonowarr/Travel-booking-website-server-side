@@ -24,6 +24,7 @@ async function run() {
         console.log('database connected now');
         const database = client.db('travelBooking');
         const packagesCollection = database.collection('packages');
+        const orderCollection = database.collection('orders');
 
         //Get APi
         app.get('/packages', async (req, res) => {
@@ -59,6 +60,32 @@ async function run() {
             const result = await packagesCollection.deleteOne(query);
             res.json(result);
         })
+
+        //add order api
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            console.log('order', order);
+            const result = await orderCollection.insertOne(order);
+            res.json(result);
+
+        })
+
+        //get all order api
+        app.get('/orders', async (req, res) => {
+            const cursor = orderCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
+
+        // get order api 
+        app.get('/orders:id', async (req, res) => {
+            const id = req.params.id;
+            console.log('getting specific oder', id);
+            const query = { _id: ObjectId(id) };
+            const singleOrder = await orderCollection.findOne(query);
+            res.json(singleOrder);
+        })
+
     }
     finally {
         // await client.close();
