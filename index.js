@@ -70,6 +70,31 @@ async function run() {
 
         })
 
+        // for update
+        app.put('/orders/:id', async (req, res) => {
+            const updateOrder = req.body[0];
+            const id = req.params.id;
+            // console.log(updateOrder);
+            const filter = { _id: ObjectId(id) };
+
+            const options = { upsert: true };
+
+            const updateDoc = {
+                $set: {
+                    name: updateOrder.name,
+                    email: updateOrder.email,
+                    price: updateOrder.price,
+                    orderStatus: updateOrder.orderStatus,
+                    address: updateOrder.address,
+                    phone: updateOrder.phone,
+                    title: updateOrder.title,
+                }
+            };
+            const result = await orderCollection.updateOne(filter, updateDoc, options);
+            console.log(result);
+            res.send(result);
+        })
+
         //get all order api
         app.get('/orders', async (req, res) => {
             const cursor = orderCollection.find({});
